@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Recreación de una interfaz completa con opciones para ajustar imágenes y más.">
+    <title>Recreación de Interfaz Completa</title>
+    <!-- Link para la fuente Bebas Neue desde Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos existentes para la interfaz */
+        .left-options { display: flex; align-items: center; }
+        /* Otros estilos existentes... */
+
+        /* Estilos para el separador */
+        .separator {
+            display: inline-block;
+            width: 2px;
+            height: 20px;
+            background-color: #FFF;
+            margin: 0 10px;
+        }
+
+        /* Estilos para la animación y estilo de los botones */
+        .button-animation {
+            display: inline-block;
+            background-color: rgba(30, 30, 30, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 0px;
+            border: 0px solid rgba(0, 0, 0, 0.5); /* Borde translúcido */
+            font-family: 'Bebas Neue', sans-serif;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
+            backdrop-filter: blur(50px); /* Efecto de desenfoque */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.9); /* Sombra debajo del botón */
+        }
+
+        .button-animation#ajustes-btn {
+            background-image: url(https://i.imgur.com/pxwzHaH.jpeg); /* Cambia esta ruta por la ubicación de tu imagen */
+            background-size: 50px 50px;
+            background-position: 50% 50%;
+        }
+
+        .button-animation:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(255, 255, 255, 0.9);
+        }
+
+        /* Nuevos estilos para la animación y la mini ventana */
+        @keyframes zoom-in {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        @keyframes backtrace {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes backtrace-out {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
+        .mini-window {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            background-color: #1e1e1e;
+            border-radius: 0px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.9);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 100;
+        }
+
+        .mini-window.active {
+            animation: backtrace 0.5s ease forwards;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mini-window.out {
+            animation: backtrace-out 0.5s ease forwards;
+        }
+
+        .card.zoom-out {
+            animation: zoom-in 0.5s forwards;
+            transform: scale(1.5);
+            opacity: 0;
+        }
+
+        /* Estilos para la nueva barra superior en la segunda interfaz */
+        .top-bar-second {
+            display: flex;
+            align-items: center;
+            background-color: #333; /* Color de fondo de la barra */
+            padding: 10px;
+            position: absolute;
+            top: 40px; /* Ajustado para aparecer justo debajo de la primera barra */
+            left: 0;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            z-index: 101; /* Asegúrate de que esté encima de otros elementos */
+            opacity: 0;
+            transform: translateY(-20px); /* Inicialmente desplazado hacia arriba */
+            transition: opacity 0.5s ease, transform 0.5s ease; /* Transición suave */
+        }
+
+        .top-bar-second.visible {
+            opacity: 1;
+            transform: translateY(0); /* Moverse hacia abajo */
+        }
+
+        .left-options-second {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .title-second {
+            font-family: 'Bebas Neue', sans-serif;
+            color: #FFF;
+            font-size: 18px;
+        }
+
+        .right-options-second {
+            display: flex;
+            align-items: center;
+        }
+
+        .icon-settings {
+            width: 24px;
+            height: 24px;
+            background-image: url('path/to/settings-icon.png'); /* Cambia esta ruta por la ubicación de tu icono */
+            background-size: cover;
+            cursor: pointer;
+        }
+
+        /* Ocultar la segunda interfaz por defecto */
+        #second-interface.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="left-options">
+            <span class="cartoon-swim">Cartoon Swim</span>
+            <span class="separator"></span> <!-- Separador visual -->
+            <span class="item button-animation" id="ajustes-btn">Ajuste</span>
+        </div>
+        <div class="right-options">
+            <span class="icon-search"></span>
+            <span class="icon-wifi"></span>
+        </div>
+    </div>
+
+    <div id="mini-window" class="mini-window">
+        <label for="file-input" class="custom-file-upload button-animation">
+            Seleccionar archivo
+        </label>
+        <input type="file" id="file-input" accept=".png" class="hidden-file-input">
+        <button id="save-btn" class="button-animation">Guardar</button>
+    </div>
+
+    <!-- Interfaz de la primera pantalla -->
+    <div class="card" id="main-interface">
+        <div class="image-container" id="image-container">
+            <img src="dreamcast.png" alt="Dreamcast Image" id="main-image">
+        </div>
+        <div class="specifications-box">
+            <h2>Dreamcast</h2>
+            <p><span class="icon-controller"></span> 1 elementos · sistema 1 de 10</p>
+            <div class="buttons">
+                <button class="btn btn-collection">
+                    <span class="icon-play"></span> Colección
+                </button>
+                <button class="btn btn-random">Aleatorio</button>
+                <button class="btn btn-routes">Rutas</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interfaz de la segunda pantalla (inicialmente oculta) -->
+    <div id="second-interface" class="hidden">
+        <div class="top-bar-second" id="top-bar-second">
+            <div class="left-options-second">
+                <span class="title-second">Nueva Interfaz</span>
+            </div>
+            <div class="right-options-second">
+                <span class="icon-settings"></span>
+            </div>
+        </div>
+        <!-- Contenido de la segunda interfaz aquí -->
+    </div>
+
+    <div class="bottom-bar">
+        <div class="system-info">
+            <span>03:48 a. m.</span>
+            <span>viernes · ago. 16 · Daijishō · Sistema DREAMCAST</span>
+        </div>
+        <div class="actions">
+            <span class="icon-download"></span> DESCARGAR
+        </div>
+        <div class="navigation">
+            <span class="btn-navigation">A SELECCIONAR</span>
+            <span class="btn-navigation">B ATRÁS</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
